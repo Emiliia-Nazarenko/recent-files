@@ -1,0 +1,107 @@
+﻿<Window x:Class="RecentFiles.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RecentFiles"
+        xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+        mc:Ignorable="d"
+        Title="Recent Files" Height="450" Width="800" WindowState="Maximized">
+
+    <Window.Resources>
+        <CollectionViewSource Source="{Binding Files}" x:Key="cvs">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="LastWriteTime" Direction="Descending"/>
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
+    </Window.Resources>
+
+    <Grid Margin="5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Vertical" 
+            VerticalAlignment="Stretch" 
+            HorizontalAlignment="Stretch">
+
+            <StackPanel HorizontalAlignment="Left" 
+                        VerticalAlignment="Center" 
+                        Orientation="Horizontal">
+                <Label Content="Search in:"
+                       Width="65"></Label>
+                <TextBox Width="228" 
+                         Text="{Binding RootFolder}"
+                         VerticalContentAlignment="Center"/>
+                <Label Content="Filter:"></Label>
+                <TextBox Width="50" 
+                         Text="{Binding Filter}"
+                         VerticalContentAlignment="Center"/>
+                <CheckBox Content="Skip Windows folder" 
+                          Margin="10,5,0,0" 
+                          IsChecked="{Binding SkipWindowsFolder}"/>
+            </StackPanel>
+            
+            <StackPanel HorizontalAlignment="Left" 
+                        VerticalAlignment="Center" 
+                        Orientation="Horizontal"
+                        Margin="0,10,0,0">
+                <Label Content ="From:"
+                       Width="61"
+                       HorizontalContentAlignment="Right"></Label>
+                <DatePicker SelectedDate="{Binding DateFrom}" 
+                            Margin="4,0,0,0"/>
+                <Label Content ="To:"
+                       Width="25"></Label>
+                <DatePicker SelectedDate="{Binding DateTo}"/>
+                <Button Content="Scan" 
+                        Margin="39,0,5,0" 
+                        Width="50"
+                        Command="{Binding ScanCommand}"
+                        IsEnabled="{Binding ScanIsEnabled}"/>
+                <Button Content="Stop" 
+                        Margin="5,0,5,0"
+                        Width="50"
+                        Command="{Binding StopCommand}"
+                        IsEnabled="{Binding StopIsEnabled}"/>
+            </StackPanel>
+        </StackPanel>
+
+        <DataGrid Grid.Row="1"
+					 AutoGenerateColumns="False" 
+					 CanUserResizeRows="False" 
+					 IsReadOnly="True" 
+					 SelectionUnit="FullRow" 
+					 ColumnHeaderHeight="25" 
+					 Margin="0 10 0 0"
+					 CanUserSortColumns="True"
+					 EnableRowVirtualization="True"
+					 RowHeight="22"
+                     ItemsSource="{Binding Source={StaticResource cvs}}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="File" Binding="{Binding FullName}" Width="*"/>
+                <DataGridTextColumn Header="Type" Binding="{Binding Extension}" Width="60"/>
+                <DataGridTextColumn Header="Date Modified" Binding="{Binding LastWriteTime}" Width="150"/>
+                <DataGridTextColumn Header="Date Created" Binding="{Binding CreationTime}" Width="150"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <StackPanel Grid.Row="2" 
+                    Orientation="Horizontal" 
+                    VerticalAlignment="Center" 
+                    HorizontalAlignment="Left" 
+                    Margin="0,5,0,0">
+            <TextBlock VerticalAlignment="Center" 
+                       Margin="5,0,5,0">
+					<Run Text="Files found: "/>
+					<Run Text="{Binding Files.Count, Mode=OneWay}"/>
+            </TextBlock>
+            <Button Content="Export to CSV"
+                    Margin="10,0,5,0"
+                    Width="100"
+                    Command="{Binding ExportCommand}"/>
+        </StackPanel>
+    </Grid>
+</Window>
